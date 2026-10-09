@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: calculator-dev
+
+resources:
+  - ../../base
+
+# CI (calculator-ci-test, update-gitops job) rewrites this after every publish to main
+images:
+  - name: calculator
+    newName: 337224145785.dkr.ecr.il-central-1.amazonaws.com/calculator
+    newTag: sha-027af24

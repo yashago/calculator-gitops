@@ -1,0 +1,32 @@
+# Health checks Argo Rollouts runs against the canary pods only (service="calculator-canary").
+# Actuator endpoints are excluded so probes and scrapes don't mask real traffic.
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: calculator-canary-health
+spec:
+  args:
+    - name: namespace
+  metrics:
+    - name: success-rate
+      interval: 30s
+      failureLimit: 2
+      # No traffic yields no data; treat that as passing so an idle demo can still promote
+      successCondition: len(result) == 0 || isNaN(result[0]) || result[0] >= 0.99
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+          query: |
+            sum(rate(http_server_requests_seconds_count{namespace="{{args.namespace}}",service="calculator-canary",uri!~"/actuator.*",status!~"5.."}[1m]))
+            /
+            sum(rate(http_server_requests_seconds_count{namespace="{{args.namespace}}",service="calculator-canary",uri!~"/actuator.*"}[1m]))
+    - name: p95-latency-seconds
+      interval: 30s
+      failureLimit: 2
+      successCondition: len(result) == 0 || isNaN(result[0]) || result[0] < 0.3
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+          query: |
+            histogram_quantile(0.95,
+              sum by (le) (rate(http_server_requests_seconds_bucket{namespace="{{args.namespace}}",service="calculator-canary",uri!~"/actuator.*"}[1m])))

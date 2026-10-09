@@ -1,0 +1,23 @@
+# The AWS Load Balancer Controller turns this into an internet-facing ALB.
+# Argo Rollouts writes the weighted stable/canary split into the
+# alb.ingress.kubernetes.io/actions.calculator-stable annotation during a canary.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: calculator
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip # route straight to pod IPs
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health/readiness
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: calculator-stable
+                port:
+                  name: use-annotation # the action annotation decides the target groups

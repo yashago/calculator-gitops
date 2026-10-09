@@ -1,0 +1,13 @@
+# Prometheus scrapes both services; the "service" label on each series tells stable and canary apart.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: calculator
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: calculator
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s

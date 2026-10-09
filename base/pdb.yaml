@@ -1,0 +1,10 @@
+# Node drains (upgrades, scale-in) take down at most one pod at a time
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: calculator
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: calculator

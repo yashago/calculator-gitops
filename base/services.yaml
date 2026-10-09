@@ -1,0 +1,29 @@
+# Argo Rollouts adds a pod-template-hash to each selector, so during a canary
+# "stable" targets the old pods and "canary" the new ones.
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-stable
+  labels:
+    app.kubernetes.io/name: calculator
+spec:
+  selector:
+    app.kubernetes.io/name: calculator
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-canary
+  labels:
+    app.kubernetes.io/name: calculator
+spec:
+  selector:
+    app.kubernetes.io/name: calculator
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

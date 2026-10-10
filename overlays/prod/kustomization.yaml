@@ -10,7 +10,7 @@ resources:
 images:
   - name: calculator
     newName: 337224145785.dkr.ecr.il-central-1.amazonaws.com/calculator
-    newTag: sha-3b4f61f
+    newTag: sha-a69e576
 
 patches:
   - target:

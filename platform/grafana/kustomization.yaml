@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+# Grafana's sidecar loads every ConfigMap labelled grafana_dashboard=1, in any namespace.
+# Edit calculator-dashboard.json here, not in the Grafana UI: Argo CD restores the file's version.
+configMapGenerator:
+  - name: calculator-dashboard
+    files:
+      - calculator-dashboard.json
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"

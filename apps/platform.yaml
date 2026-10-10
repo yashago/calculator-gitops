@@ -1,0 +1,22 @@
+# Cluster-wide pieces of the calculator that belong to no single environment,
+# such as its Grafana dashboard, which shows dev and prod side by side.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: calculator-platform
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/yashago/calculator-gitops.git
+    targetRevision: main
+    path: platform/grafana
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

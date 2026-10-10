@@ -10,16 +10,16 @@ resources:
 images:
 - name: calculator
   newName: 337224145785.dkr.ecr.il-central-1.amazonaws.com/calculator
-  newTag: sha-a69e576
+  newTag: sha-068ba5b
 
 # Same image in every environment; only configuration differs
 patches:
-- target:
-    kind: Rollout
-    name: calculator
-  patch: |
+- patch: |
     - op: add
       path: /spec/template/spec/containers/0/env
       value:
         - name: APP_ENV
           value: dev
+  target:
+    kind: Rollout
+    name: calculator
